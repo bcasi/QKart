@@ -62,4 +62,7 @@
   .form {
     min-width: 24rem;
   }
+  .content {
+    align-items: flex-end;
+  }
 }
