@@ -7,4 +7,4 @@
 <div>
 <h1>Tech Used</h1>
 <h3>Frontend :</div>
-<p><b>ReactJs</b>, <b>Material UI</b> ,<b>React Hooks</b></p>
+<p><b>ReactJs</b>, <b>Material UI</b> ,<b>React Hooks</b>, Notistack, Axios</p>
