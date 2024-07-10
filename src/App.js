@@ -1,4 +1,7 @@
 import Register from "./components/Register";
+import { Route, Switch } from "react-router-dom";
+import Login from "./components/Login";
+import Products from "./components/Products";
 import ipConfig from "./ipConfig.json";
 
 export const config = {
@@ -8,7 +11,12 @@ export const config = {
 function App() {
   return (
     <div className="App">
-      <Register />
+      {/* TODO: CRIO_TASK_MODULE_LOGIN - To add configure routes and their mapping */}
+      <Switch>
+        <Route exact path="/" component={Products} />
+        <Route path="/register" component={Register} />
+        <Route path="/login" component={Login} />
+      </Switch>
     </div>
   );
 }
