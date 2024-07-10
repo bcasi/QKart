@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider } from "@mui/system";
-import theme from "./theme";
 import "./index.css";
 import App from "./App";
 import { SnackbarProvider } from "notistack";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from "@mui/system";
+import theme from "./theme";
 
 ReactDOM.render(
   <React.StrictMode>
