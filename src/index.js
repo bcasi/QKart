@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "@mui/system";
 import theme from "./theme";
 import "./index.css";
@@ -9,16 +9,20 @@ import { SnackbarProvider } from "notistack";
 
 ReactDOM.render(
   <React.StrictMode>
-    <SnackbarProvider
-      maxSnack={1}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
-      }}
-      preventDuplicate
-    >
-      <App />
-    </SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider
+        maxSnack={1}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        preventDuplicate
+      >
+        <Router>
+          <App />
+        </Router>
+      </SnackbarProvider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

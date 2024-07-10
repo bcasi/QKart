@@ -45,13 +45,13 @@
   color: #45c09f;
 }
 
-.button {
+/* .button {
   background-color: #00a278 !important;
 }
 
 .button:hover {
   background-color: #00845c !important;
-}
+} */
 .circular {
   display: flex;
   justify-content: center;

@@ -16,6 +16,7 @@ const Register = () => {
     confirmPassword: "",
   });
   const [isRegistering, setIsRegistering] = useState(false);
+  const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
@@ -42,18 +43,53 @@ const Register = () => {
    * }
    */
   const register = async (formData) => {
-    console.log(config.endpoint);
+    const isValid = validateInput(formData);
+
+    if (!isValid) return;
+
+    setIsRegistering(true);
+
     const url = config.endpoint + "/auth/register";
+
+    let message;
+
     try {
-      const sendData = await axios.post(url, formData);
-      console.log(sendData);
+      const { username, password } = formData;
+      const sendData = await axios.post(url, { username, password });
+
       const resp = await sendData.data;
+
+      if (resp.success) {
+        message = "Registered successfully";
+
+        snackbarCall(message, "success");
+
+        history.push("/login");
+      }
+      setIsRegistering(false);
 
       return resp;
     } catch (err) {
-      return err;
+      setIsRegistering(false);
+
+      if (err.response) {
+        snackbarCall(message, "error");
+      } else {
+        message =
+          "Something went wrong. Check that the backend is running, reachable and returns valid JSON.";
+
+        snackbarCall(message, "error");
+
+        setIsRegistering(false);
+      }
+      return;
     }
   };
+
+  function snackbarCall(message, type) {
+    const variant = { variant: type };
+    enqueueSnackbar(message, variant);
+  }
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement user input validation logic
   /**
@@ -76,73 +112,33 @@ const Register = () => {
   const validateInput = (data) => {
     const { username, password, confirmPassword } = data;
     const variant = { variant: "warning" };
-    let validationError = false;
+    let isValid = true;
 
     if (!username) {
       enqueueSnackbar("Username is a required field", variant);
-      return (validationError = true);
+      return (isValid = false);
     }
 
     if (!password) {
       enqueueSnackbar("Password is a required field", variant);
-      return (validationError = true);
+      return (isValid = false);
     }
 
     if (username.length <= 5) {
       enqueueSnackbar("Username must be at least 6 characters", variant);
-      return (validationError = true);
+      return (isValid = false);
     }
 
     if (password.length <= 5) {
       enqueueSnackbar("Password must be at least 6 characters", variant);
-      return (validationError = true);
+      return (isValid = false);
     }
 
     if (!confirmPassword || confirmPassword !== password) {
       enqueueSnackbar("Passwords do not match", variant);
-      return (validationError = true);
+      return (isValid = false);
     }
-    return validationError;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsRegistering(true);
-
-    const validationError = validateInput(formData);
-
-    if (validationError) {
-      setIsRegistering(false);
-    }
-
-    const { username, password } = formData;
-
-    if (!validationError) {
-      const registerUser = await register({ username, password });
-
-      if (registerUser.success) {
-        const variant = { variant: "success" };
-        enqueueSnackbar("Registered Successfully", variant);
-        setIsRegistering(false);
-      } else {
-        const variant = { variant: "error" };
-
-        if (registerUser.response) {
-          enqueueSnackbar(registerUser.response.data.message, variant);
-          setIsRegistering(false);
-        }
-
-        if (!register.reponse) {
-          enqueueSnackbar(
-            "Something went wrong. Check that the backend is running, reachable and returns valid JSON.",
-            variant
-          );
-          setIsRegistering(false);
-        }
-      }
-    }
-
-    return;
+    return isValid;
   };
 
   const handleUserName = (e) => {
@@ -167,7 +163,7 @@ const Register = () => {
       justifyContent="space-between"
       minHeight="100vh"
     >
-      <Header hasHiddenAuthButtons />
+      <Header hasHiddenAuthButtons={true} />
       <Box className="content">
         <Stack spacing={2} className="form">
           <h2 className="title">Register</h2>
@@ -211,7 +207,9 @@ const Register = () => {
           ) : (
             <Button
               className="button"
-              onClick={handleSubmit}
+              onClick={() => {
+                register(formData);
+              }}
               variant="contained"
             >
               Register Now
@@ -219,9 +217,9 @@ const Register = () => {
           )}
           <p className="secondary-action">
             Already have an account?{" "}
-            <a className="link" href="#">
+            <Link className="link" to={"/login"}>
               Login here
-            </a>
+            </Link>
           </p>
         </Stack>
       </Box>

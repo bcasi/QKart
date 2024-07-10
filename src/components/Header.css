@@ -20,6 +20,11 @@
   color: #00a278 !important;
 }
 
+.register-button {
+  background-color: #00a278 !important;
+  color: white !important;
+}
+
 @media screen and (min-width: 768px) {
   .username-text {
     display: block;
