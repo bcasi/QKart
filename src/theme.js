@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Lato"
+    fontFamily: "Lato",
   },
   palette: {
     primary: {
@@ -10,6 +10,12 @@ const theme = createTheme({
       main: "#00a278",
       dark: "#00845c",
       contrastText: "#fff",
+    },
+    text: {
+      contrastText: "#000000",
+    },
+    secondary: {
+      main: "#00a278",
     },
   },
 });

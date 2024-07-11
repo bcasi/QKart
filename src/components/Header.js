@@ -1,13 +1,34 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Avatar, Button, Stack } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
 import React from "react";
 import "./Header.css";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
+const useStyles = makeStyles((theme) => ({
+  logoutButton: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    "&:hover, &:focus": {
+      backgroundColor: theme.palette.primary.contrastText,
+      color: theme.palette.primary.main,
+    },
+  },
+}));
+
+// const useStyles = makeStyles({
+//   logoutButton: {
+//     backgroundColor: "#45c09f",
+//     color: "#fff",
+//   },
+// });
+
 const Header = ({ children, hasHiddenAuthButtons }) => {
   const history = useHistory();
   const username = localStorage.getItem("username");
+
+  const classes = useStyles();
 
   const handleLogout = () => {
     localStorage.clear();
@@ -19,6 +40,7 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
       <Box className="header-title">
         <img src="logo_light.svg" alt="QKart-icon"></img>
       </Box>
+      <Box className="search-space">{children}</Box>
       {hasHiddenAuthButtons ? (
         <Button
           className="explore-button"
@@ -40,7 +62,7 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
             Login
           </Button>
           <Button
-            className="register-button"
+            className={classes.logoutButton}
             onClick={() => {
               history.push("/register");
             }}
