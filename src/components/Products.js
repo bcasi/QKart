@@ -15,6 +15,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import "./Products.css";
 import ProductCard from "./ProductCard";
+import Cart, { generateCartItemsFrom } from "./Cart";
 
 /**
  * @typedef {Object} CartItem -  - Data on product added to cart
@@ -30,11 +31,13 @@ import ProductCard from "./ProductCard";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [filterProducts, setFilterProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [debounceTimeout, setDebounceTimeout] = useState(0);
+  const [cart, setCart] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
+  const username = localStorage.getItem("username");
+  const token = localStorage.getItem("token");
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Fetch products data and store it
   /* @property {string} productId - Unique ID for the product
@@ -80,8 +83,14 @@ const Products = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    performAPICall().then((resp) => {
-      setProducts(resp);
+    performAPICall().then((prodResp) => {
+      setProducts(prodResp);
+      if (token) {
+        fetchCart(token).then((cartResp) => {
+          setCart(generateCartItemsFrom(cartResp, prodResp));
+        });
+      }
+
       setIsLoading(false);
     });
   }, []);
@@ -220,6 +229,13 @@ const Products = () => {
 
     try {
       // TODO: CRIO_TASK_MODULE_CART - Pass Bearer token inside "Authorization" header to get data from "GET /cart" API and return the response data
+      const getCart = await axios.get(config.endpoint + "/cart", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const resp = await getCart.data;
+      return resp;
     } catch (e) {
       if (e.response && e.response.status === 400) {
         enqueueSnackbar(e.response.data.message, { variant: "error" });
@@ -248,7 +264,14 @@ const Products = () => {
    *    Whether a product of given "productId" exists in the "items" array
    *
    */
-  const isItemInCart = (items, productId) => {};
+  const isItemInCart = (items, productId) => {
+    let result = false;
+    const isItem = items.find((item) => item.productId === productId);
+    if (isItem) {
+      result = true;
+    }
+    return result;
+  };
 
   /**
    * Perform the API call to add or update items in the user's cart and update local cart data to display the latest cart
@@ -293,7 +316,43 @@ const Products = () => {
     productId,
     qty,
     options = { preventDuplicate: false }
-  ) => {};
+  ) => {
+    if (options.preventDuplicate) {
+      const isItem = isItemInCart(items, productId);
+
+      if (isItem) {
+        return enqueueSnackbar(
+          "Item already in cart. Use the cart sidebar to update quantity or remove item.",
+          {
+            variant: "warning",
+          }
+        );
+      }
+    }
+
+    const url = config.endpoint + "/cart";
+
+    try {
+      const addProductsInCart = await axios.post(
+        url,
+        { productId, qty },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const newCart = await addProductsInCart.data;
+
+      setCart(generateCartItemsFrom(newCart, products));
+    } catch (err) {
+      if (err.response) {
+        enqueueSnackbar(err.response.data.message, {
+          variant: "warning",
+        });
+      }
+    }
+  };
 
   return (
     <div>
@@ -338,17 +397,67 @@ const Products = () => {
         placeholder="Search for items/categories"
         name="search"
       />
-      <Grid container spacing={2}>
-        <Grid item className="product-grid">
+      <Grid container className="product-grid-container" spacing={2}>
+        <Grid
+          item
+          xs={username ? 12 : ""}
+          md={username ? 8 : ""}
+          className="product-grid"
+        >
           <Box className="hero">
             <p className="hero-heading">
               India’s <span className="hero-highlight">FASTEST DELIVERY</span>{" "}
               to your door step
             </p>
           </Box>
+          {!isLoading ? (
+            <Grid container spacing={2} className="products-grid2">
+              {products?.length && products?.length > 0 ? (
+                products?.map((product) => {
+                  return (
+                    <Grid item xs={6} md={3} key={product._id}>
+                      <ProductCard
+                        product={product}
+                        handleAddToCart={() => {
+                          addToCart(token, cart, products, product._id, 1, {
+                            preventDuplicate: true,
+                          });
+                        }}
+                      />
+                    </Grid>
+                  );
+                })
+              ) : (
+                <div className="loading">
+                  <SentimentDissatisfied />
+                  <p>No products found</p>
+                </div>
+              )}
+            </Grid>
+          ) : (
+            <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item>
+                <div className="loading">
+                  <CircularProgress />
+                </div>
+
+                <Typography>Loading Products....</Typography>
+              </Grid>
+            </Grid>
+          )}
+        </Grid>
+        <Grid item className="cart-grid">
+          {username && (
+            <Cart products={products} items={cart} handleQuantity={addToCart} />
+          )}
         </Grid>
       </Grid>
-      {!isLoading ? (
+      {/* {!isLoading ? (
         <Grid container spacing={2} className="products-grid2">
           {products?.length && products?.length > 0 ? (
             products?.map((product) => {
@@ -380,7 +489,7 @@ const Products = () => {
             <Typography>Loading Products....</Typography>
           </Grid>
         </Grid>
-      )}
+      )} */}
       {/* TODO: CRIO_TASK_MODULE_CART - Display the Cart component */}
       <Footer />
     </div>

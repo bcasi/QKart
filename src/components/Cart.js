@@ -47,7 +47,16 @@ import "./Cart.css";
  *    Array of objects with complete data on products in cart
  *
  */
-export const generateCartItemsFrom = (cartData, productsData) => {};
+export const generateCartItemsFrom = (cartData, productsData) => {
+  let cartItems = cartData.map((cart) => {
+    let data = productsData.find((product) => product._id === cart.productId);
+    const { name, category, cost, rating, image } = data;
+    let result = { ...cart, name, category, cost, rating, image };
+    return result;
+  });
+
+  return cartItems;
+};
 
 /**
  * Get the total value of all products added to the cart
@@ -59,7 +68,14 @@ export const generateCartItemsFrom = (cartData, productsData) => {};
  *    Value of all items in the cart
  *
  */
-export const getTotalCartValue = (items = []) => {};
+export const getTotalCartValue = (items = []) => {
+  let totalValue = 0;
+  items.forEach((cartItem) => {
+    let totalCostOfQty = cartItem.cost * cartItem.qty;
+    totalValue += totalCostOfQty;
+  });
+  return totalValue;
+};
 
 /**
  * Component to display the current quantity for a product and + and - buttons to update product quantity on cart
@@ -106,6 +122,8 @@ const ItemQuantity = ({ value, handleAdd, handleDelete }) => {
  *
  */
 const Cart = ({ products, items = [], handleQuantity }) => {
+  const history = useHistory();
+  const token = localStorage.getItem("token");
   if (!items.length) {
     return (
       <Box className="cart empty">
@@ -121,6 +139,69 @@ const Cart = ({ products, items = [], handleQuantity }) => {
     <>
       <Box className="cart">
         {/* TODO: CRIO_TASK_MODULE_CART - Display view for each cart item with non-zero quantity */}
+
+        {items?.map((cartItem) => {
+          return (
+            <Box
+              key={cartItem.name}
+              display="flex"
+              alignItems="flex-start"
+              padding="1rem"
+            >
+              <Box className="image-container">
+                <img
+                  // Add product image
+                  src={cartItem.image}
+                  // Add product name as alt eext
+                  alt={cartItem.name}
+                  width="100%"
+                  height="100%"
+                />
+              </Box>
+              <Box
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                height="6rem"
+                paddingX="1rem"
+              >
+                <div>{cartItem.name}</div>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <ItemQuantity
+                    value={cartItem.qty}
+                    handleAdd={() => {
+                      handleQuantity(
+                        token,
+                        items,
+                        products,
+                        cartItem.productId,
+                        cartItem.qty + 1
+                      );
+                    }}
+                    handleDelete={() => {
+                      handleQuantity(
+                        token,
+                        items,
+                        products,
+                        cartItem.productId,
+                        cartItem.qty - 1
+                      );
+                    }}
+                    // Add required props by checking implementation
+                  />
+                  <Box padding="0.5rem" fontWeight="700">
+                    ${cartItem.qty * cartItem.cost}
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          );
+        })}
+
         <Box
           padding="1rem"
           display="flex"
@@ -147,6 +228,9 @@ const Cart = ({ products, items = [], handleQuantity }) => {
             variant="contained"
             startIcon={<ShoppingCart />}
             className="checkout-btn"
+            onClick={() => {
+              history.push("/checkout");
+            }}
           >
             Checkout
           </Button>

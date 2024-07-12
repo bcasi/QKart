@@ -65,6 +65,14 @@
   display: none !important;
 }
 
+.product-grid-container {
+  flex-direction: column;
+}
+
+.cart-grid {
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
 @media screen and (min-width: 768px) {
   .hero {
     justify-content: flex-end;
@@ -81,5 +89,17 @@
   }
   .search-desktop {
     display: block !important;
+  }
+  .product-grid-container {
+    flex-direction: row;
+    justify-content: flex-start;
+    justify-content: space-between;
+  }
+  .product-grid {
+    flex-grow: 1;
+  }
+  .cart-grid {
+    margin-top: 21px;
+    flex-grow: 1;
   }
 }
