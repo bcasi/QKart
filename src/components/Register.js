@@ -73,14 +73,13 @@ const Register = () => {
       setIsRegistering(false);
 
       if (err.response) {
+        message = err.response.data.message;
         snackbarCall(message, "error");
       } else {
         message =
           "Something went wrong. Check that the backend is running, reachable and returns valid JSON.";
 
         snackbarCall(message, "error");
-
-        setIsRegistering(false);
       }
       return;
     }

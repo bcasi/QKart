@@ -19,6 +19,19 @@
   width: 100%;
 }
 
+.products-grid2 {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+}
+
 .hero-heading {
   color: #fff;
   font-size: 1.5rem;
