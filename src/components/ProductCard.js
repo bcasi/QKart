@@ -50,7 +50,9 @@ const ProductCard = ({ product, handleAddToCart }) => {
         <Rating name="read-only" value={rating} readOnly />
       </CardContent>
       <CardActions className="card-actions">
-        <Button className="card-button">ADD TO CART</Button>
+        <Button className="card-button" onClick={handleAddToCart}>
+          ADD TO CART
+        </Button>
       </CardActions>
     </Card>
   );
