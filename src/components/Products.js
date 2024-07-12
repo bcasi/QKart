@@ -86,13 +86,12 @@ const Products = () => {
   }, []);
 
   const handleSearch = (e) => {
-    if (e.target.value !== "") setSearch(e.target.value);
+    setSearch(e.target.value);
   };
 
   const performAPICall = async () => {
     let message;
     const url = config.endpoint + "/products";
-    console.log(url);
     try {
       const fetchProducts = await axios.get(url);
       const resp = await fetchProducts.data;
@@ -132,7 +131,6 @@ const Products = () => {
    */
   const performSearch = async (text) => {
     setIsLoading(true);
-    console.log("c");
     let url = config.endpoint + "/products/search";
     if (text !== "") {
       url = `${url}?value=${text}`;
@@ -159,12 +157,18 @@ const Products = () => {
   };
 
   useEffect(() => {
+    let newTimeout;
+    if (debounceTimeout !== 0) {
+      clearTimeout(debounceTimeout);
+    }
     if (search !== "") {
-      if (debounceTimeout !== 0) {
-        clearTimeout(debounceTimeout);
-      }
-      const newTimeout = setTimeout(() => performSearch(search), 1000);
+      newTimeout = setTimeout(() => performSearch(search), 1000);
       setDebounceTimeout(newTimeout);
+    } else {
+      performAPICall().then((resp) => {
+        setProducts(resp);
+        setIsLoading(false);
+      });
     }
   }, [search]);
 
@@ -221,6 +225,10 @@ const Products = () => {
         className="search-mobile"
         size="small"
         fullWidth
+        value={search}
+        onChange={(e) => {
+          handleSearch(e);
+        }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
