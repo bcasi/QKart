@@ -32,8 +32,10 @@ import { productCardData } from "../helpers/sample";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [filterProducts, setFilterProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [debounceTimeout, setDebounceTimeout] = useState(0);
   const { enqueueSnackbar } = useSnackbar();
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Fetch products data and store it
@@ -83,6 +85,10 @@ const Products = () => {
     });
   }, []);
 
+  const handleSearch = (e) => {
+    if (e.target.value !== "") setSearch(e.target.value);
+  };
+
   const performAPICall = async () => {
     let message;
     const url = config.endpoint + "/products";
@@ -126,12 +132,13 @@ const Products = () => {
    */
   const performSearch = async (text) => {
     setIsLoading(true);
-    setSearch(text.value);
     console.log("c");
+    let url = config.endpoint + "/products/search";
+    if (text !== "") {
+      url = `${url}?value=${text}`;
+    }
     try {
-      const searchProducts = await axios.get(
-        `${config.endpoint}/products/search?value=${search}`
-      );
+      const searchProducts = await axios.get(url);
       const resp = await searchProducts.data;
       setIsLoading(false);
       setProducts(resp);
@@ -150,6 +157,16 @@ const Products = () => {
       return;
     }
   };
+
+  useEffect(() => {
+    if (search !== "") {
+      if (debounceTimeout !== 0) {
+        clearTimeout(debounceTimeout);
+      }
+      const newTimeout = setTimeout(() => performSearch(search), 1000);
+      setDebounceTimeout(newTimeout);
+    }
+  }, [search]);
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Optimise API calls with debounce search implementation
   /**
@@ -186,7 +203,7 @@ const Products = () => {
           fullWidth
           value={search}
           onChange={(e) => {
-            debounceSearch(e.target);
+            handleSearch(e);
           }}
           InputProps={{
             endAdornment: (
@@ -226,8 +243,8 @@ const Products = () => {
       </Grid>
       {!isLoading ? (
         <Grid container spacing={2} className="products-grid2">
-          {products?.length > 0 ? (
-            products.map((product) => {
+          {products?.length && products?.length > 0 ? (
+            products?.map((product) => {
               return (
                 <Grid item xs={6} md={3} key={product._id}>
                   <ProductCard product={product} />
