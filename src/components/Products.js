@@ -226,7 +226,7 @@ const Products = () => {
       </Grid>
       {!isLoading ? (
         <Grid container spacing={2} className="products-grid2">
-          {products.length > 0 ? (
+          {products?.length > 0 ? (
             products.map((product) => {
               return (
                 <Grid item xs={6} md={3} key={product._id}>
@@ -235,7 +235,7 @@ const Products = () => {
               );
             })
           ) : (
-            <div className="">
+            <div className="loading">
               😑
               <p>No products found</p>
             </div>
@@ -249,7 +249,7 @@ const Products = () => {
           alignItems="center"
         >
           <Grid item>
-            <div className="loader">
+            <div className="loading">
               <CircularProgress />
             </div>
 
