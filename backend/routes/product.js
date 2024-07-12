@@ -18,6 +18,8 @@ router.get("/", (req, res) => {
 router.get("/search", (req, res) => {
   console.log("Request received for searching ", req.query.value);
 
+  if (!req.query.value) return;
+
   //Creating a RegEx to search
   const searchRegex = new RegExp(req.query.value.replace(/['"]+/g, ""), "i");
 
