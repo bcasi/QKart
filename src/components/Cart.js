@@ -91,20 +91,33 @@ export const getTotalCartValue = (items = []) => {
  *
  *
  */
-const ItemQuantity = ({ value, handleAdd, handleDelete }) => {
+const ItemQuantity = ({ isReadOnly, value, handleAdd, handleDelete }) => {
   return (
     <Stack direction="row" alignItems="center">
-      <IconButton size="small" color="primary" onClick={handleDelete}>
-        <RemoveOutlined />
-      </IconButton>
+      {!isReadOnly && (
+        <IconButton size="small" color="primary" onClick={handleDelete}>
+          <RemoveOutlined />
+        </IconButton>
+      )}
       <Box padding="0.5rem" data-testid="item-qty">
-        {value}
+        {!isReadOnly ? value : `Qty: ${value}`}
       </Box>
-      <IconButton size="small" color="primary" onClick={handleAdd}>
-        <AddOutlined />
-      </IconButton>
+      {!isReadOnly && (
+        <IconButton size="small" color="primary" onClick={handleAdd}>
+          <AddOutlined />
+        </IconButton>
+      )}
     </Stack>
   );
+};
+
+const getTotalItems = (items) => {
+  let result = 0;
+  items.forEach((item) => {
+    result += item.qty;
+  });
+
+  return result;
 };
 
 /**
@@ -121,7 +134,7 @@ const ItemQuantity = ({ value, handleAdd, handleDelete }) => {
  *
  *
  */
-const Cart = ({ products, items = [], handleQuantity }) => {
+const Cart = ({ isReadOnly, products, items = [], handleQuantity }) => {
   const history = useHistory();
   const token = localStorage.getItem("token");
   if (!items.length) {
@@ -172,6 +185,7 @@ const Cart = ({ products, items = [], handleQuantity }) => {
                   alignItems="center"
                 >
                   <ItemQuantity
+                    isReadOnly={isReadOnly}
                     value={cartItem.qty}
                     handleAdd={() => {
                       handleQuantity(
@@ -222,20 +236,51 @@ const Cart = ({ products, items = [], handleQuantity }) => {
           </Box>
         </Box>
 
-        <Box display="flex" justifyContent="flex-end" className="cart-footer">
-          <Button
-            color="primary"
-            variant="contained"
-            startIcon={<ShoppingCart />}
-            className="checkout-btn"
-            onClick={() => {
-              history.push("/checkout");
-            }}
-          >
-            Checkout
-          </Button>
-        </Box>
+        {!isReadOnly && (
+          <Box display="flex" justifyContent="flex-end" className="cart-footer">
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<ShoppingCart />}
+              className="checkout-btn"
+              onClick={() => {
+                history.push("/checkout");
+              }}
+            >
+              Checkout
+            </Button>
+          </Box>
+        )}
       </Box>
+      {isReadOnly && (
+        <Box className="cart">
+          <Box
+            display="flex"
+            alignItems=""
+            justifyContent="space-evenly"
+            flexDirection="column"
+            className="order-details"
+          >
+            <h3>Order Details</h3>
+            <Box display="flex" justifyContent="space-between">
+              <p>Products</p>
+              <p> {getTotalItems(items)}</p>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <p>Subtotal</p>
+              <p>${getTotalCartValue(items)}</p>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <p>Shipping Charges</p>
+              <p>$0</p>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <p className="bold">Total</p>
+              <p className="bold"> ${getTotalCartValue(items)}</p>
+            </Box>
+          </Box>
+        </Box>
+      )}
     </>
   );
 };

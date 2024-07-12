@@ -37,7 +37,12 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
 
   return (
     <Box className="header">
-      <Box className="header-title">
+      <Box
+        className="header-title"
+        onClick={() => {
+          history.push("/");
+        }}
+      >
         <img src="logo_light.svg" alt="QKart-icon"></img>
       </Box>
       <Box className="search-space">{children}</Box>
