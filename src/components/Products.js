@@ -451,46 +451,13 @@ const Products = () => {
             </Grid>
           )}
         </Grid>
+        {/* TODO: CRIO_TASK_MODULE_CART - Display the Cart component */}
         <Grid item className="cart-grid">
           {username && (
             <Cart products={products} items={cart} handleQuantity={addToCart} />
           )}
         </Grid>
       </Grid>
-      {/* {!isLoading ? (
-        <Grid container spacing={2} className="products-grid2">
-          {products?.length && products?.length > 0 ? (
-            products?.map((product) => {
-              return (
-                <Grid item xs={6} md={3} key={product._id}>
-                  <ProductCard product={product} />
-                </Grid>
-              );
-            })
-          ) : (
-            <div className="loading">
-              <SentimentDissatisfied />
-              <p>No products found</p>
-            </div>
-          )}
-        </Grid>
-      ) : (
-        <Grid
-          container
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Grid item>
-            <div className="loading">
-              <CircularProgress />
-            </div>
-
-            <Typography>Loading Products....</Typography>
-          </Grid>
-        </Grid>
-      )} */}
-      {/* TODO: CRIO_TASK_MODULE_CART - Display the Cart component */}
       <Footer />
     </div>
   );
