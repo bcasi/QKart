@@ -69,7 +69,6 @@ describe("Products Page - Header", () => {
         <Products />
       </Router>
     </SnackbarProvider>
-    
   );
 
   beforeEach(async () => {
@@ -105,13 +104,10 @@ describe("Products Page - Header", () => {
     expect(history.location.pathname).toBe("/register");
   });
 
-<<<<<<< HEAD
-=======
   it("should have a search bar", () => {
     const searchInput = screen.getAllByPlaceholderText(/search/i)[0];
     expect(searchInput).toBeInTheDocument();
   });
->>>>>>> 7e5275e2d8cf6e78d2f4dfe28d18de5307f90ed3
 });
 
 describe("Products Page - Header: Logged in", () => {
