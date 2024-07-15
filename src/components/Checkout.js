@@ -224,7 +224,6 @@ const Checkout = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
       const data = await response.data;
       return data;
     } catch {
@@ -286,11 +285,9 @@ const Checkout = () => {
         }
       );
       const resp = await postAddress.data;
-      console.log(resp);
       setAddresses({ ...addresses, all: resp });
       setNewAddress({ ...newAddress, isAddingNewAddress: false });
     } catch (err) {
-      console.log("err", err);
       if (err.response) {
         enqueueSnackbar(err.response.data.message, { variant: "error" });
       } else {
@@ -520,10 +517,6 @@ const Checkout = () => {
               {/* TODO: CRIO_TASK_MODULE_CHECKOUT - Display list of addresses and corresponding "Delete" buttons, if present, of which 1 can be selected */}
               {addresses?.all?.length > 0 ? (
                 addresses?.all?.map((address) => {
-                  {
-                    console.log("address", address.address);
-                  }
-
                   return (
                     <Box
                       key={address._id}
